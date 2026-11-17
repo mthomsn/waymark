@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WAYMARK world demo</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  #world { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; }
+  #info { position: fixed; left: 12px; top: 10px; font: 13px/1.5 ui-monospace, "SF Mono", Menlo, monospace; color: #cfe3dc;
+          background: rgba(0,0,0,.55); padding: 6px 10px; border-left: 3px solid #7be0b0; pointer-events: none; white-space: pre; }
+  #hl { position: fixed; right: 12px; top: 10px; display: flex; gap: 6px; }
+  #hl button { font: 12px ui-monospace, "SF Mono", Menlo, monospace; color: #7be0b0; background: rgba(0,0,0,.6); border: 1px solid #7be0b0; padding: 4px 8px; cursor: pointer; }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<canvas id="world"></canvas>
+<div id="info">loading terrain…</div>
+<div id="hl"></div>
+<script type="module">
+import { createWorld } from './world.js';
+const info = document.getElementById('info');
+const q = new URLSearchParams(location.search);
+const t0 = performance.now();
+const config = await (await fetch('./world.json')).json();
+const world = await createWorld({ canvas: document.getElementById('world'), config,
+  onProgress: (f) => (info.textContent = `loading terrain… ${Math.round(f * 100)}%`) });
+const loadMs = Math.round(performance.now() - t0);
+window.world = world;
+
+const P = Object.fromEntries(config.pois.map((p) => [p.id, p]));
+// sample breadcrumb trail: HAB → wandering north-east
+const trail = [];
+for (let i = 0; i <= 60; i++) { const s = i / 60; trail.push({ x: P.hab.x + 22 * s + 2.5 * Math.sin(s * 9), y: P.hab.y + 34 * s + 1.5 * Math.cos(s * 7) }); }
+world.setTrail(trail);
+const end = trail[trail.length - 1];
+world.setRoute([end, { x: end.x + 6, y: end.y + 10 }, { x: P['ltv-a'].x - 4, y: P['ltv-a'].y - 18 }, { x: P['ltv-a'].x, y: P['ltv-a'].y }]);
+world.setPins([
+  { n: 1, x: P.hab.x + 8, y: P.hab.y + 14, t: 0, sample: false },
+  { n: 2, x: P.hab.x + 14, y: P.hab.y + 22, t: 0, sample: true, rock: 'basalt' },
+]);
+world.setTarget({ label: 'LTV Task Board A', ...P['ltv-a'] });
+
+if (q.has('x')) world.setPose({ x: +q.get('x'), y: +q.get('y'), heading: +(q.get('h') ?? 0), pitch: +(q.get('pitch') ?? -0.08) });
+if (q.has('hl')) world.highlight(q.get('hl'));
+
+const hlBox = document.getElementById('hl');
+for (const k of ['none', 'trail', 'route', 'hazards', 'pois', 'pins', 'target']) {
+  const b = document.createElement('button'); b.textContent = k; b.onclick = (e) => { e.stopPropagation(); world.highlight(k === 'none' ? null : k); }; hlBox.append(b);
+}
+
+let frames = 0, fps = 0, last = performance.now(), pose = world.pose;
+world.onPose((p) => (pose = p));
+(function tick(now) {
+  frames++;
+  if (now - last > 500) { fps = Math.round(frames * 1000 / (now - last)); frames = 0; last = now; }
+  info.textContent = `${fps} fps   load ${loadMs} ms (parse ${world.timings.loadParseMs}, grid ${world.timings.gridMs}, ${world.timings.triangles} tris)\n`
+    + `x ${pose.x.toFixed(1)}  y ${pose.y.toFixed(1)}  hdg ${pose.heading.toFixed(0)}°  `
+    + `h ${world.heightAt(pose.x, pose.y).toFixed(2)} m  slope ${world.slopeAt(pose.x, pose.y).toFixed(1)}°\n`
+    + `click to look · WASD/arrows walk · Shift run · Esc release`;
+  requestAnimationFrame(tick);
+})(performance.now());
+</script>
+</body>
+</html>

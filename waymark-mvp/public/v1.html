@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WAYMARK HUD v1</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="visor">
+    <!-- Ambient layer: always visible -->
+    <canvas id="heading" width="900" height="56"></canvas>
+    <div id="link" class="chip">TSS …</div>
+    <div id="alert" class="hidden"></div>
+
+    <div id="range">
+      <svg viewBox="0 0 120 120" aria-hidden="true">
+        <circle cx="60" cy="60" r="50" class="ring-bg"/>
+        <circle cx="60" cy="60" r="50" class="ring" id="ring"/>
+      </svg>
+      <div class="range-text">
+        <div id="range-main">--</div>
+        <div id="range-sub">range</div>
+      </div>
+    </div>
+
+    <!-- On-demand panels -->
+    <section id="panel-status" class="panel hidden">
+      <h2>Status</h2>
+      <div id="status-off"></div>
+      <button id="status-toggle" class="linklike"></button>
+      <div id="status-nom" class="hidden"></div>
+      <div id="status-sw"></div>
+    </section>
+
+    <section id="panel-find" class="panel hidden">
+      <h2>Find <span id="find-target"></span></h2>
+      <canvas id="map" width="420" height="300"></canvas>
+      <div id="find-info"></div>
+    </section>
+
+    <section id="panel-range" class="panel hidden">
+      <h2>Range</h2>
+      <div id="range-detail"></div>
+    </section>
+
+    <section id="panel-procedure" class="panel hidden">
+      <h2 id="proc-title">Procedure</h2>
+      <div id="proc-group"></div>
+      <div id="proc-step"></div>
+      <div id="proc-progress"></div>
+      <div id="proc-wrong" class="hidden"></div>
+      <ol id="proc-upcoming"></ol>
+    </section>
+
+    <div id="toast" class="hidden"></div>
+
+    <form id="voice">
+      <span class="wake">Waymark,</span>
+      <input id="voice-input" autocomplete="off" placeholder="status · find lander · range · mark sample · procedure · next · back · done · close">
+      <button type="button" id="mic" title="Speak (Chrome)">mic</button>
+    </form>
+  </div>
+
+  <details id="dev">
+    <summary>Dev drawer (simulates TSS / peripherals)</summary>
+    <div class="dev-grid">
+      <fieldset><legend>EVA</legend>
+        <button data-field="eva.status.started" data-value="true">Start EVA</button>
+        <button data-field="eva.status.started" data-value="false">Stop EVA</button>
+      </fieldset>
+      <fieldset id="dev-uia"><legend>UIA</legend></fieldset>
+      <fieldset id="dev-dcu"><legend>DCU</legend></fieldset>
+      <fieldset><legend>IMU (walk)</legend>
+        <button data-walk="5">Forward 5 m</button>
+        <button data-turn="-30">Turn −30°</button>
+        <button data-turn="30">Turn +30°</button>
+      </fieldset>
+      <fieldset><legend>XRF rock</legend>
+        <select id="dev-rock">
+          <option value="0">0 Default</option><option value="1">1 Mare Basalt</option>
+          <option value="2">2 Vesicular Basalt</option><option value="3">3 Olivine Basalt</option>
+          <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+        </select>
+      </fieldset>
+    </div>
+    <pre id="dev-log"></pre>
+  </details>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

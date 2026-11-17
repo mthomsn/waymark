@@ -1,0 +1,25 @@
+{
+  "id": "ingress",
+  "name": "EVA Ingress (EV1)",
+  "source": "TSS2027 documents/procedures/ev-team-procedure-timeline.pdf (EVA Ingress)",
+  "steps": [
+    { "group": "Connect UIA to DCU", "text": "Connect umbilical UIA → DCU", "type": "manual" },
+    { "group": "Connect UIA to DCU", "text": "UIA: EMU-1 PWR → ON", "type": "switch", "path": "uia.eva1_power", "expect": true },
+    { "group": "Connect UIA to DCU", "text": "DCU: BATT → UMB", "type": "switch", "path": "dcu.batt.lu", "expect": false },
+
+    { "group": "Vent O2 tanks", "text": "UIA: O2 VENT → OPEN", "type": "switch", "path": "uia.oxy_vent", "expect": true },
+    { "group": "Vent O2 tanks", "text": "Wait: PRI and SEC O2 < 10 psi", "type": "wait", "all": [
+      { "path": "telemetry.oxy_pri_pressure", "op": "<", "value": 10 },
+      { "path": "telemetry.oxy_sec_pressure", "op": "<", "value": 10 } ] },
+    { "group": "Vent O2 tanks", "text": "UIA: O2 VENT → CLOSE", "type": "switch", "path": "uia.oxy_vent", "expect": false },
+
+    { "group": "Empty coolant", "text": "DCU: PUMP → OPEN", "type": "switch", "path": "dcu.pump", "expect": true },
+    { "group": "Empty coolant", "text": "UIA: EV-1 WASTE WATER → OPEN", "type": "switch", "path": "uia.eva1_water_waste", "expect": true },
+    { "group": "Empty coolant", "text": "Wait: coolant < 5 %", "type": "wait", "all": [
+      { "path": "telemetry.coolant_storage", "op": "<", "value": 5 } ] },
+    { "group": "Empty coolant", "text": "UIA: EV-1 WASTE WATER → CLOSE", "type": "switch", "path": "uia.eva1_water_waste", "expect": false },
+
+    { "group": "Disconnect", "text": "UIA: EMU-1 PWR → OFF", "type": "switch", "path": "uia.eva1_power", "expect": false },
+    { "group": "Disconnect", "text": "Disconnect UIA ↔ DCU umbilical", "type": "manual" }
+  ]
+}

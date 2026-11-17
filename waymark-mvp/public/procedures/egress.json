@@ -1,0 +1,46 @@
+{
+  "name": "EVA Egress (EV1)",
+  "source": "TSS2027 documents/procedures/ev-team-procedure-timeline.pdf",
+  "steps": [
+    { "group": "Connect UIA to DCU", "text": "Verify umbilical UIA → DCU", "type": "manual" },
+    { "group": "Connect UIA to DCU", "text": "UIA: EMU-1 PWR → ON", "type": "switch", "path": "uia.eva1_power", "expect": true },
+    { "group": "Connect UIA to DCU", "text": "DCU: BATT → UMB", "type": "switch", "path": "dcu.batt.lu", "expect": false },
+    { "group": "Connect UIA to DCU", "text": "UIA: DEPRESS PUMP → ON", "type": "switch", "path": "uia.depress", "expect": true },
+
+    { "group": "Prep O2 tanks", "text": "UIA: O2 VENT → OPEN", "type": "switch", "path": "uia.oxy_vent", "expect": true },
+    { "group": "Prep O2 tanks", "text": "Wait: PRI and SEC O2 < 10 psi", "type": "wait", "all": [
+      { "path": "telemetry.oxy_pri_pressure", "op": "<", "value": 10 },
+      { "path": "telemetry.oxy_sec_pressure", "op": "<", "value": 10 } ] },
+    { "group": "Prep O2 tanks", "text": "UIA: O2 VENT → CLOSE", "type": "switch", "path": "uia.oxy_vent", "expect": false },
+    { "group": "Prep O2 tanks", "text": "DCU: OXY → PRI", "type": "switch", "path": "dcu.oxy", "expect": true },
+    { "group": "Prep O2 tanks", "text": "UIA: OXYGEN EMU-1 → OPEN", "type": "switch", "path": "uia.eva1_oxy", "expect": true },
+    { "group": "Prep O2 tanks", "text": "Wait: PRI O2 > 2950 psi", "type": "wait", "all": [
+      { "path": "telemetry.oxy_pri_pressure", "op": ">", "value": 2950 } ] },
+    { "group": "Prep O2 tanks", "text": "UIA: OXYGEN EMU-1 → CLOSE", "type": "switch", "path": "uia.eva1_oxy", "expect": false },
+    { "group": "Prep O2 tanks", "text": "DCU: OXY → SEC", "type": "switch", "path": "dcu.oxy", "expect": false },
+    { "group": "Prep O2 tanks", "text": "UIA: OXYGEN EMU-1 → OPEN", "type": "switch", "path": "uia.eva1_oxy", "expect": true },
+    { "group": "Prep O2 tanks", "text": "Wait: SEC O2 > 2950 psi", "type": "wait", "all": [
+      { "path": "telemetry.oxy_sec_pressure", "op": ">", "value": 2950 } ] },
+    { "group": "Prep O2 tanks", "text": "UIA: OXYGEN EMU-1 → CLOSE", "type": "switch", "path": "uia.eva1_oxy", "expect": false },
+    { "group": "Prep O2 tanks", "text": "DCU: OXY → PRI", "type": "switch", "path": "dcu.oxy", "expect": true },
+
+    { "group": "Prep coolant", "text": "DCU: PUMP → OPEN", "type": "switch", "path": "dcu.pump", "expect": true },
+    { "group": "Prep coolant", "text": "UIA: EV-1 SUPPLY WATER → OPEN", "type": "switch", "path": "uia.eva1_water_supply", "expect": true },
+    { "group": "Prep coolant", "text": "Wait: coolant > 95 %", "type": "wait", "all": [
+      { "path": "telemetry.coolant_storage", "op": ">", "value": 95 } ] },
+    { "group": "Prep coolant", "text": "UIA: EV-1 SUPPLY WATER → CLOSE", "type": "switch", "path": "uia.eva1_water_supply", "expect": false },
+
+    { "group": "End depress & disconnect", "text": "Wait: suit and O2 pressure = 4 psi", "type": "wait", "all": [
+      { "path": "telemetry.suit_pressure_total", "op": ">", "value": 3.9 },
+      { "path": "telemetry.suit_pressure_oxy", "op": ">", "value": 3.9 } ] },
+    { "group": "End depress & disconnect", "text": "UIA: DEPRESS PUMP → OFF", "type": "switch", "path": "uia.depress", "expect": false },
+    { "group": "End depress & disconnect", "text": "DCU: BATT → PRI", "type": "switch", "path": "dcu.batt.ps", "expect": true },
+    { "group": "End depress & disconnect", "text": "DCU: BATT → LOCAL", "type": "switch", "path": "dcu.batt.lu", "expect": true },
+    { "group": "End depress & disconnect", "text": "UIA: EMU-1 PWR → OFF", "type": "switch", "path": "uia.eva1_power", "expect": false },
+    { "group": "End depress & disconnect", "text": "DCU: FAN → PRI", "type": "switch", "path": "dcu.fan", "expect": true },
+    { "group": "End depress & disconnect", "text": "DCU: PUMP → CLOSE", "type": "switch", "path": "dcu.pump", "expect": false },
+    { "group": "End depress & disconnect", "text": "DCU: CO2 → PRI (A)", "type": "switch", "path": "dcu.co2", "expect": true },
+    { "group": "End depress & disconnect", "text": "DCU: verify OXY → PRI", "type": "switch", "path": "dcu.oxy", "expect": true },
+    { "group": "End depress & disconnect", "text": "Disconnect UIA ↔ DCU umbilical", "type": "manual" }
+  ]
+}

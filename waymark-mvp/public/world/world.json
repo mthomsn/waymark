@@ -1,0 +1,14 @@
+{
+  "_note": "Places the rock-yard scan (documents/3d-scans/lunar.obj, centred, ~55x57 m) in TSS coordinates. Approximate: tune scale/rotation/center until HAB and LTV sit on the right features.",
+  "terrainUrl": "assets/lunar.obj",
+  "centerTss": [-5640, -10010],
+  "scale": 2.0,
+  "verticalScale": 2.0,
+  "rotationDeg": 0,
+  "eyeHeight": 1.7,
+  "pois": [
+    { "id": "hab",   "label": "HAB",              "kind": "lander", "x": -5670, "y": -10060 },
+    { "id": "ltv-a", "label": "LTV Task Board A", "kind": "worksite", "x": -5635, "y": -9970 },
+    { "id": "ltv-b", "label": "LTV Task Board B", "kind": "worksite", "x": -5615, "y": -9995 }
+  ]
+}
