@@ -24,6 +24,8 @@ Inside `waymark-mvp/`:
 
 You need Node 18 or newer and a running TSS2027 server. There are no npm dependencies and no build step.
 
+Before you start, clone and set up the TSS server from [SUITS-Techteam/TSS2027](https://github.com/SUITS-Techteam/TSS2027) by following its README.
+
 ```bash
 # 1. Start TSS in its own terminal and note the IP it prints
 cd ~/code/TSS2027 && ./server.exe
